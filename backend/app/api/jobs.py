@@ -21,7 +21,7 @@ async def create_job(
     job = GenerationJob(
         query=payload.query,
         location=payload.location,
-        industry=None,
+        industry=payload.industry,
         max_results=payload.max_results,
         sources_enabled=payload.sources_enabled or ["google_maps"],
     )

@@ -19,15 +19,17 @@ function renderLeads(items) {
   rows.innerHTML = "";
 
   if (!items.length) {
-    rows.innerHTML = `<tr><td colspan="5">No leads yet.</td></tr>`;
+    rows.innerHTML = `<tr><td colspan="6">No leads yet.</td></tr>`;
     return;
   }
 
   for (const lead of items) {
     const tr = document.createElement("tr");
+    const emailCell = lead.email ? `<a href="mailto:${lead.email}">${lead.email}</a>` : "-";
     tr.innerHTML = `
       <td>${lead.business_name}</td>
       <td>${lead.phone || "-"}</td>
+      <td>${emailCell}</td>
       <td>${lead.website ? `<a href="${lead.website}" target="_blank" rel="noreferrer">${lead.website}</a>` : "-"}</td>
       <td>${[lead.city, lead.state, lead.country].filter(Boolean).join(", ") || "-"}</td>
       <td>${lead.lead_score}</td>
@@ -90,10 +92,17 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const data = new FormData(form);
 
+  const sources = [];
+  if (data.get("source_google_maps")) sources.push("google_maps");
+  if (data.get("source_google_search")) sources.push("google_search");
+  const industry = (data.get("industry") || "").trim() || null;
+
   const body = {
     query: data.get("query"),
     location: data.get("location"),
     max_results: Number(data.get("maxResults") || 40),
+    industry: industry || undefined,
+    sources_enabled: sources.length ? sources : ["google_search"],
   };
 
   setStatus("Creating job...");

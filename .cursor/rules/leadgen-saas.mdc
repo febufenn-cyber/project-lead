@@ -1,0 +1,58 @@
+# Lead Generation SaaS Development Rules
+
+## Architecture Principles
+- **FastAPI backend** with async/await for I/O-bound operations
+- **PostgreSQL** for structured data with JSONB for flexible fields
+- **Redis** for caching and Celery task queue
+- **Docker Compose** for local development and production-like environment
+- **Frontend** (currently static HTML) - plan to migrate to React/Next.js
+
+## Code Standards
+- **Python**: Use type hints, async/await, Pydantic models for validation
+- **SQLAlchemy** with async support for database operations
+- **Environment variables** via Pydantic Settings (.env file)
+- **Error handling**: Use proper HTTP status codes, log exceptions, provide user-friendly messages
+- **Testing**: Pytest with fixtures, mock external APIs
+
+## AI Integration Patterns
+1. **Lead Enrichment**: Use OpenAI/Codex to enrich lead data (company size, revenue, pain points)
+2. **Scoring**: Combine rule-based scoring with ML predictions
+3. **Outreach**: Generate personalized emails using LLMs
+4. **Caching**: Cache LLM responses in Redis (24h TTL) to reduce costs
+5. **Fallbacks**: Implement fallback chains (GPT-4 → Claude → Local Ollama)
+
+## API Design
+- RESTful endpoints with versioning (`/api/v1/`)
+- Use FastAPI's dependency injection for DB sessions, authentication
+- Background tasks for long-running operations (lead generation)
+- Webhook support for integrations (n8n, CRM systems)
+
+## Database Patterns
+- Use `JSONB` columns for AI enrichment data
+- Index frequently queried columns (lead_score, city, created_at)
+- Consider partitioning leads table by `created_at` for large datasets
+- Use vector embeddings for similarity search (future)
+
+## Security
+- Validate all user inputs (Pydantic models)
+- Rate limiting for API endpoints
+- Secure API keys management (environment variables, never hardcode)
+- CORS configuration for frontend access
+
+## Monitoring & Observability
+- Log key operations (job started/completed, API calls, errors)
+- Metrics: leads generated, enrichment success rate, API latency
+- Health checks for services (API, DB, Redis, Celery)
+
+## Development Workflow
+1. Make changes locally
+2. Run tests: `pytest` in backend directory
+3. Build Docker images: `docker-compose build`
+4. Test locally: `docker-compose up`
+5. Commit changes with descriptive messages
+
+## Integration Points
+- **n8n**: Webhook triggers for automated follow-up sequences
+- **YetiForce CRM**: REST API sync for leads
+- **OpenClaw**: Real-time notifications for high-priority leads
+- **Email services**: SendGrid/Mailgun for outreach campaigns

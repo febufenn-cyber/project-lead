@@ -10,6 +10,10 @@ class JobCreateRequest(BaseModel):
     query: str = Field(min_length=2, max_length=255)
     location: str = Field(min_length=2, max_length=255)
     max_results: int = Field(default=40, ge=1, le=200)
+    industry: str | None = Field(
+        default=None,
+        description="real_estate or cars for broker client queries; otherwise generic search",
+    )
     sources_enabled: list[str] = Field(
         default_factory=lambda: ["google_maps"],
         description="Data sources: google_maps, google_search, yellow_pages",
@@ -24,6 +28,7 @@ class JobResponse(BaseModel):
     status: JobStatus
     total_results: int
     error_message: str | None
+    industry: str | None = None
     sources_enabled: list[str] | None = None
     created_at: datetime
     started_at: datetime | None

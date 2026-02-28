@@ -14,18 +14,34 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     celery_broker_url: str = "redis://localhost:6379/1"
     celery_result_backend: str = "redis://localhost:6379/2"
+    
+    # Data Sources
     google_places_api_key: str = ""
     google_custom_search_api_key: str = ""
     google_custom_search_engine_id: str = ""
     bing_search_api_key: str = ""
+    
+    # Email & Contact Enrichment
     hunter_api_key: str = ""
     snov_api_key: str = ""
     apollo_api_key: str = ""
     clearbit_api_key: str = ""
-
-    cors_origins: str = "http://localhost:8080,http://127.0.0.1:8080"
+    
+    # AI Services
+    openai_api_key: str = ""
+    anthropic_api_key: str = ""
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "qwen2.5:7b"
+    
+    # Infrastructure
+    cors_origins: str = "http://localhost:8080,http://127.0.0.1:8080,http://localhost:3000"
     request_timeout_seconds: int = 20
     proxy_list: str = ""
+    
+    # Integration Webhooks
+    n8n_webhook_url: str = ""
+    yetiforce_api_url: str = ""
+    openclaw_gateway_url: str = "http://localhost:8000"
 
     @property
     def cors_origin_list(self) -> list[str]:

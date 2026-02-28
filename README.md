@@ -47,6 +47,14 @@ GOOGLE_PLACES_API_KEY=your_google_places_api_key_here
 4. Create an API key (Credentials → Create credentials → API key)
 5. Paste the key into `GOOGLE_PLACES_API_KEY`
 
+**Get Google Custom Search (for broker clients – real estate & car buyers/sellers):**
+1. Enable "Custom Search API" in [API Library](https://console.cloud.google.com/apis/library)
+2. Create credentials (API key) if not already done – can reuse the same key for both Places and Custom Search
+3. Go to [Programmable Search Engine](https://programmablesearchengine.google.com/)
+4. Create a new search engine, set "Search the entire web"
+5. Copy the "Search engine ID" (cx) into `GOOGLE_CUSTOM_SEARCH_ENGINE_ID`
+6. Copy your API key into `GOOGLE_CUSTOM_SEARCH_API_KEY`
+
 ### 3. Start services
 
 ```bash
@@ -79,10 +87,20 @@ Then visit `http://localhost:8080`.
 ### Example queries
 
 ```bash
-# Create a job
+# Create a job (generic)
 curl -X POST http://localhost:8000/api/v1/jobs \
   -H "Content-Type: application/json" \
   -d '{"query": "restaurants", "location": "San Francisco", "max_results": 20}'
+
+# Broker: real estate clients (buyers/sellers)
+curl -X POST http://localhost:8000/api/v1/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"query": "sell", "location": "New York", "max_results": 40, "industry": "real_estate", "sources_enabled": ["google_search"]}'
+
+# Broker: car clients (buyers/sellers)
+curl -X POST http://localhost:8000/api/v1/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"query": "sell", "location": "Brooklyn", "max_results": 40, "industry": "cars", "sources_enabled": ["google_search"]}'
 
 # List jobs
 curl http://localhost:8000/api/v1/jobs
@@ -125,8 +143,9 @@ curl "http://localhost:8000/api/v1/leads/export/csv?job_id={job_id}" -o leads.cs
 | `REDIS_URL` | Redis URL | redis://redis:6379/0 |
 | `CELERY_BROKER_URL` | Celery broker | redis://redis:6379/1 |
 | `CELERY_RESULT_BACKEND` | Celery results | redis://redis:6379/2 |
-| `GOOGLE_PLACES_API_KEY` | **Required** for Google Places | (empty) |
-| `GOOGLE_CUSTOM_SEARCH_*` | Optional, for future sources | (empty) |
+| `GOOGLE_PLACES_API_KEY` | **Required** for Google Maps/Places | (empty) |
+| `GOOGLE_CUSTOM_SEARCH_API_KEY` | **Required** for broker clients (real estate, cars) | (empty) |
+| `GOOGLE_CUSTOM_SEARCH_ENGINE_ID` | Custom Search Engine ID | (empty) |
 | `BING_SEARCH_API_KEY` | Optional | (empty) |
 | `HUNTER_API_KEY` | Optional, email finder | (empty) |
 | `SNOV_API_KEY` | Optional | (empty) |
@@ -149,5 +168,5 @@ Check `GET /api/v1/jobs/{id}` → `error_message` when `status` is `failed`.
 ## Notes
 
 - Tables are auto-created on API startup (no migrations yet).
-- `email` is not populated in the MVP; Google Places does not provide direct email data.
-- Additional providers can be added under `backend/app/providers/` and wired in `services/generator.py`.
+- **Google Places** does not provide email; **Google Custom Search** can yield emails when they appear in search snippets (broker client use case).
+- For broker clients (real estate, cars), use `industry: "real_estate"` or `industry: "cars"` with `sources_enabled: ["google_search"]` to find buyer/seller intent.

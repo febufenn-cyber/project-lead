@@ -90,8 +90,10 @@ def normalize_to_lead_payload(
     company_website = raw.get("company_website") or raw.get("website")
     company_name = raw.get("company_name") or raw.get("name") or "Unknown"
     external_id = raw.get("external_id")
+    company_email = raw.get("company_email") or raw.get("email")
+    contact_email = raw.get("contact_email") or company_email
 
-    return {
+    payload = {
         "job_id": job_id,
         "source": source,
         "external_id": external_id,
@@ -99,7 +101,7 @@ def normalize_to_lead_payload(
         "company_domain": _domain_from_url(company_website),
         "company_website": company_website,
         "company_phone": raw.get("company_phone") or raw.get("phone"),
-        "company_email": raw.get("company_email") or raw.get("email"),
+        "company_email": company_email,
         "street": raw.get("street") or raw.get("address"),
         "city": raw.get("city"),
         "state": raw.get("state"),
@@ -113,3 +115,13 @@ def normalize_to_lead_payload(
         "raw_data": raw.get("raw_data", raw),
         "data_sources": raw.get("data_sources", [source]),
     }
+
+    # Optional fields (Lead model allows None)
+    if contact_email:
+        payload["contact_email"] = contact_email
+    if raw.get("source_urls"):
+        payload["source_urls"] = raw["source_urls"]
+    if raw.get("email_found") is not None:
+        payload["email_found"] = bool(raw["email_found"])
+
+    return payload

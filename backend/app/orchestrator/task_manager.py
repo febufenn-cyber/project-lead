@@ -1,5 +1,6 @@
 """Task manager that runs the full generation pipeline via orchestrator."""
 
+import logging
 from datetime import datetime
 from uuid import UUID
 
@@ -57,6 +58,7 @@ async def run_generation_job(job_id: UUID) -> None:
         query = job.query
         location = job.location
         max_results = job.max_results or 40
+        industry = job.industry
 
     provider_error = _get_provider_error_message(sources)
     if provider_error:
@@ -92,6 +94,7 @@ async def run_generation_job(job_id: UUID) -> None:
                     query=query,
                     location=location,
                     max_results=max_results,
+                    industry=industry,
                 )
                 for raw in raw_list:
                     std = standardizer.standardize(raw)
@@ -115,6 +118,19 @@ async def run_generation_job(job_id: UUID) -> None:
                 address=raw.get("street") or raw.get("address"),
             )
             intent_score = intent_detector.detect(raw)
+            
+            # AI Enrichment
+            ai_enrichment = {}
+            try:
+                from app.ai.enrichment import enrichment_service
+                ai_enrichment = await enrichment_service.enrich_lead(raw)
+                raw["ai_enrichment"] = ai_enrichment
+            except Exception as e:
+                # Log but continue without enrichment
+                import logging
+                logging.getLogger(__name__).warning(f"AI enrichment failed: {e}")
+                raw["ai_enrichment"] = {"error": str(e), "source": "failed"}
+            
             payload = normalize_to_lead_payload(
                 raw,
                 source=raw.get("source", "unknown"),
@@ -122,6 +138,10 @@ async def run_generation_job(job_id: UUID) -> None:
                 lead_score=score,
             )
             payload["intent_score"] = intent_score
+            # Store AI enrichment in raw_data
+            if ai_enrichment:
+                payload["raw_data"]["ai_enrichment"] = ai_enrichment
+                payload["is_enriched"] = True
             lead_payloads.append(Lead(**payload))
 
         async with AsyncSessionFactory() as session:

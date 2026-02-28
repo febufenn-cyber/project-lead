@@ -19,12 +19,27 @@
 
         <form id="jobForm" class="grid">
           <label>
+            Industry (for broker clients)
+            <select name="industry">
+              <option value="">General</option>
+              <option value="real_estate">Real Estate (buyers/sellers)</option>
+              <option value="cars">Cars (buyers/sellers)</option>
+            </select>
+          </label>
+          <label>
             Query
-            <input name="query" type="text" placeholder="restaurants" required />
+            <input name="query" type="text" placeholder='e.g. "sell my house" or "sell my car"' required />
           </label>
           <label>
             Location
             <input name="location" type="text" placeholder="New York" required />
+          </label>
+          <label>
+            Sources
+            <div class="sources-row">
+              <label class="checkbox"><input name="source_google_maps" type="checkbox" /> Google Maps</label>
+              <label class="checkbox"><input name="source_google_search" type="checkbox" checked /> Google Search</label>
+            </div>
           </label>
           <label>
             Max Results
@@ -46,6 +61,7 @@
             <tr>
               <th>Business</th>
               <th>Phone</th>
+              <th>Email</th>
               <th>Website</th>
               <th>Location</th>
               <th>Score</th>
