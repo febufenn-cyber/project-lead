@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LeadGen MVP Dashboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="panel">
+        <h1>Lead Generation MVP</h1>
+        <p class="subtitle">Official API based data collection with async jobs.</p>
+
+        <div class="api-row">
+          <label for="apiBase">API Base URL</label>
+          <input id="apiBase" type="text" value="http://localhost:8000/api/v1" />
+        </div>
+
+        <form id="jobForm" class="grid">
+          <label>
+            Query
+            <input name="query" type="text" placeholder="restaurants" required />
+          </label>
+          <label>
+            Location
+            <input name="location" type="text" placeholder="New York" required />
+          </label>
+          <label>
+            Max Results
+            <input name="maxResults" type="number" min="1" max="200" value="40" />
+          </label>
+          <button type="submit">Generate Leads</button>
+        </form>
+
+        <div class="status" id="status"></div>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <h2>Leads</h2>
+          <button id="exportBtn" type="button">Export CSV</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>Phone</th>
+              <th>Website</th>
+              <th>Location</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody id="leadRows"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

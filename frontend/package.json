@@ -1,0 +1,8 @@
+{
+  "name": "leadgen-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Use your preferred frontend framework setup here'"
+  }
+}
