@@ -32,6 +32,12 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5:7b"
+
+    # Vertex AI / Gemini enrichment
+    vertex_project_id: str = ""
+    vertex_location: str = "us-central1"
+    vertex_model: str = "gemini-2.5-pro"
+    enrichment_timeout: int = 30
     
     # Infrastructure
     cors_origins: str = "http://localhost:8080,http://127.0.0.1:8080,http://localhost:3000"

@@ -13,6 +13,9 @@ from app.api.export import router as export_router
 from app.api.health import router as health_router
 from app.api.jobs import router as jobs_router
 from app.api.leads import router as leads_router
+from app.api.enrich import router as enrich_router
+from app.api.outreach import router as outreach_router
+from app.api.presets import router as presets_router
 from app.config import get_settings
 from app.database import init_db
 
@@ -51,3 +54,6 @@ app.include_router(pipelines_router, prefix=settings.api_prefix)
 app.include_router(score_router, prefix=settings.api_prefix)
 app.include_router(email_router, prefix=settings.api_prefix)
 app.include_router(export_router, prefix=settings.api_prefix)
+app.include_router(enrich_router, prefix=settings.api_prefix)
+app.include_router(outreach_router, prefix=settings.api_prefix)
+app.include_router(presets_router, prefix=settings.api_prefix)

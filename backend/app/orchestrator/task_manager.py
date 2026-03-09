@@ -46,6 +46,13 @@ def _get_provider_error_message(sources: list[str]) -> str | None:
     return "No valid data source configured. Enable google_maps, google_search, or yellow_pages"
 
 
+class TaskManager:
+    """Thin wrapper kept for import compatibility."""
+
+    async def enqueue_generation(self, job_id: UUID) -> None:
+        await run_generation_job(job_id)
+
+
 async def run_generation_job(job_id: UUID) -> None:
     """Run the multi-source generation pipeline."""
     async with AsyncSessionFactory() as session:

@@ -3,74 +3,262 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LeadGen MVP Dashboard</title>
+    <title>LeadGen — India AI Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="container">
-      <section class="panel">
-        <h1>Lead Generation MVP</h1>
-        <p class="subtitle">Official API based data collection with async jobs.</p>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">LeadGen AI</span>
+      </div>
+      <ul class="nav-list">
+        <li><button class="nav-btn active" data-tab="jobs">
+          <span class="nav-icon">🔍</span> Jobs
+        </button></li>
+        <li><button class="nav-btn" data-tab="leads">
+          <span class="nav-icon">👥</span> Leads
+        </button></li>
+        <li><button class="nav-btn" data-tab="presets">
+          <span class="nav-icon">🇮🇳</span> India Presets
+        </button></li>
+        <li><button class="nav-btn" data-tab="outreach">
+          <span class="nav-icon">✉️</span> Outreach
+        </button></li>
+        <li><button class="nav-btn" data-tab="settings">
+          <span class="nav-icon">⚙️</span> Settings
+        </button></li>
+      </ul>
+      <div class="sidebar-footer">
+        <label class="api-label">API Base</label>
+        <input id="apiBase" type="text" value="http://localhost:8000/api/v1" class="api-input" />
+      </div>
+    </nav>
 
-        <div class="api-row">
-          <label for="apiBase">API Base URL</label>
-          <input id="apiBase" type="text" value="http://localhost:8000/api/v1" />
-        </div>
+    <!-- Main content -->
+    <div class="main-wrap">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <span class="topbar-title" id="topbarTitle">Jobs</span>
+        <div class="topbar-actions" id="topbarActions"></div>
+      </header>
 
-        <form id="jobForm" class="grid">
-          <label>
-            Industry (for broker clients)
-            <select name="industry">
-              <option value="">General</option>
-              <option value="real_estate">Real Estate (buyers/sellers)</option>
-              <option value="cars">Cars (buyers/sellers)</option>
-            </select>
-          </label>
-          <label>
-            Query
-            <input name="query" type="text" placeholder='e.g. "sell my house" or "sell my car"' required />
-          </label>
-          <label>
-            Location
-            <input name="location" type="text" placeholder="New York" required />
-          </label>
-          <label>
-            Sources
-            <div class="sources-row">
-              <label class="checkbox"><input name="source_google_maps" type="checkbox" /> Google Maps</label>
-              <label class="checkbox"><input name="source_google_search" type="checkbox" checked /> Google Search</label>
+      <main class="content">
+
+        <!-- ── JOBS TAB ── -->
+        <section class="tab active" id="tab-jobs">
+          <div class="two-col">
+            <!-- Create job -->
+            <div class="card">
+              <h2 class="card-title">New Scrape Job</h2>
+              <form id="jobForm" class="form-grid">
+                <label class="field">
+                  <span>Query</span>
+                  <input name="query" type="text" placeholder='e.g. "banks fintech Mumbai"' required />
+                </label>
+                <label class="field">
+                  <span>Location</span>
+                  <input name="location" type="text" placeholder="Mumbai, India" required />
+                </label>
+                <label class="field">
+                  <span>Industry (optional)</span>
+                  <select name="industry">
+                    <option value="">General</option>
+                    <option value="bfsi">BFSI</option>
+                    <option value="it_services">IT / ITES</option>
+                    <option value="pharma">Pharma</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="ecommerce">E-Commerce</option>
+                    <option value="government">Government</option>
+                    <option value="telecom">Telecom</option>
+                    <option value="startups">Startups</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Max Results</span>
+                  <input name="maxResults" type="number" min="1" max="200" value="40" />
+                </label>
+                <label class="field full">
+                  <span>Sources</span>
+                  <div class="check-row">
+                    <label class="check"><input name="src_maps" type="checkbox" checked /> Google Maps</label>
+                    <label class="check"><input name="src_search" type="checkbox" /> Google Search</label>
+                  </div>
+                </label>
+                <button type="submit" class="btn btn-primary full">Generate Leads</button>
+              </form>
+              <div class="status-bar" id="jobStatus"></div>
             </div>
-          </label>
-          <label>
-            Max Results
-            <input name="maxResults" type="number" min="1" max="200" value="40" />
-          </label>
-          <button type="submit">Generate Leads</button>
-        </form>
 
-        <div class="status" id="status"></div>
-      </section>
+            <!-- Recent jobs -->
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Recent Jobs</h2>
+                <button class="btn btn-ghost btn-sm" id="refreshJobs">Refresh</button>
+              </div>
+              <div id="jobList" class="job-list">
+                <p class="muted">Loading jobs…</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <section class="panel">
-        <div class="toolbar">
-          <h2>Leads</h2>
-          <button id="exportBtn" type="button">Export CSV</button>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Business</th>
-              <th>Phone</th>
-              <th>Email</th>
-              <th>Website</th>
-              <th>Location</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody id="leadRows"></tbody>
-        </table>
-      </section>
-    </main>
+        <!-- ── LEADS TAB ── -->
+        <section class="tab" id="tab-leads">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Leads</h2>
+              <div class="toolbar-right">
+                <input id="leadSearch" type="text" placeholder="Search…" class="search-input" />
+                <select id="leadJobFilter" class="filter-select">
+                  <option value="">All jobs</option>
+                </select>
+                <select id="leadScoreFilter" class="filter-select">
+                  <option value="">Any score</option>
+                  <option value="60">≥ 60</option>
+                  <option value="75">≥ 75</option>
+                  <option value="90">≥ 90</option>
+                </select>
+                <button class="btn btn-ghost btn-sm" id="exportCsvBtn">Export CSV</button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table id="leadsTable">
+                <thead>
+                  <tr>
+                    <th>Company</th>
+                    <th>City</th>
+                    <th>Phone</th>
+                    <th>Score</th>
+                    <th>AI Ready</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="leadRows">
+                  <tr><td colspan="6" class="muted center">No leads loaded.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination" id="leadPagination"></div>
+          </div>
+        </section>
+
+        <!-- ── PRESETS TAB ── -->
+        <section class="tab" id="tab-presets">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">India Enterprise Presets</h2>
+              <div class="toolbar-right">
+                <select id="presetIndustryFilter" class="filter-select">
+                  <option value="">All industries</option>
+                  <option value="bfsi">BFSI</option>
+                  <option value="it_services">IT / ITES</option>
+                  <option value="pharma">Pharma & Healthcare</option>
+                  <option value="manufacturing">Manufacturing</option>
+                  <option value="ecommerce">E-Commerce</option>
+                  <option value="government">Government</option>
+                  <option value="telecom">Telecom</option>
+                  <option value="startups">Startups</option>
+                </select>
+              </div>
+            </div>
+            <div id="costEstimateBanner" class="cost-banner hidden"></div>
+            <div id="presetGrid" class="preset-grid">
+              <p class="muted">Loading presets…</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── OUTREACH TAB ── -->
+        <section class="tab" id="tab-outreach">
+          <div class="two-col">
+            <div class="card">
+              <h2 class="card-title">Generate Outreach</h2>
+              <form id="outreachForm" class="form-grid">
+                <label class="field full">
+                  <span>Lead ID</span>
+                  <input id="outreachLeadId" name="lead_id" type="text" placeholder="Paste lead UUID" required />
+                </label>
+                <label class="field">
+                  <span>Your Name</span>
+                  <input name="sender_name" type="text" value="Sales Team" />
+                </label>
+                <label class="field">
+                  <span>Your Title</span>
+                  <input name="sender_title" type="text" value="Business Development Manager" />
+                </label>
+                <label class="field">
+                  <span>Tone</span>
+                  <select name="tone">
+                    <option value="consultative">Consultative</option>
+                    <option value="conversational">Conversational</option>
+                    <option value="formal">Formal</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Language</span>
+                  <select name="language">
+                    <option value="english">English</option>
+                    <option value="hindi_english">Hinglish</option>
+                  </select>
+                </label>
+                <button type="submit" class="btn btn-primary full">Generate</button>
+                <button type="button" class="btn btn-ghost full" id="regenerateBtn">Regenerate</button>
+              </form>
+              <div class="status-bar" id="outreachStatus"></div>
+            </div>
+
+            <div class="card" id="outreachResult" style="display:none;">
+              <div class="card-header">
+                <h2 class="card-title">Generated Copy</h2>
+                <button class="btn btn-ghost btn-sm" id="copyAllBtn">Copy All</button>
+              </div>
+              <div id="outreachContent" class="outreach-content"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SETTINGS TAB ── -->
+        <section class="tab" id="tab-settings">
+          <div class="card" style="max-width:560px;">
+            <h2 class="card-title">Settings</h2>
+            <div class="form-grid">
+              <label class="field full">
+                <span>API Base URL</span>
+                <input id="apiBaseSettings" type="text" value="http://localhost:8000/api/v1" />
+              </label>
+              <button class="btn btn-primary" id="saveSettings">Save</button>
+            </div>
+            <hr class="divider" />
+            <h3 class="section-heading">Enrichment Cost Estimate</h3>
+            <div class="form-grid">
+              <label class="field">
+                <span>Lead count</span>
+                <input id="costLeadCount" type="number" value="100" min="1" max="10000" />
+              </label>
+              <button class="btn btn-ghost" id="calcCostBtn">Calculate</button>
+            </div>
+            <div id="costResult" class="cost-result hidden"></div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- Detail slide-over panel -->
+    <div class="overlay hidden" id="overlay"></div>
+    <aside class="slideover hidden" id="slideover">
+      <div class="slideover-header">
+        <h3 id="slideoverTitle">Lead Detail</h3>
+        <button class="close-btn" id="closeSlide">✕</button>
+      </div>
+      <div id="slideoverBody" class="slideover-body"></div>
+    </aside>
 
     <script src="./app.js" type="module"></script>
   </body>

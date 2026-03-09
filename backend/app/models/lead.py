@@ -53,6 +53,10 @@ class Lead(Base):
 
     raw_data: Mapped[dict] = mapped_column(JSON, default=dict)
 
+    # AI-powered enrichment fields
+    ai_enrichment: Mapped[dict | None] = mapped_column(JSON, nullable=True, default=None)
+    outreach_data: Mapped[dict | None] = mapped_column(JSON, nullable=True, default=None)
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
