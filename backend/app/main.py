@@ -1,5 +1,8 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.auth import router as auth_router
 from app.api.campaigns import router as campaigns_router
@@ -57,3 +60,9 @@ app.include_router(export_router, prefix=settings.api_prefix)
 app.include_router(enrich_router, prefix=settings.api_prefix)
 app.include_router(outreach_router, prefix=settings.api_prefix)
 app.include_router(presets_router, prefix=settings.api_prefix)
+
+# Serve frontend as static files (works for demo / ngrok)
+_frontend_dir = os.path.join(os.path.dirname(__file__), "..", "..", "frontend")
+_frontend_dir = os.path.abspath(_frontend_dir)
+if os.path.isdir(_frontend_dir):
+    app.mount("/", StaticFiles(directory=_frontend_dir, html=True), name="frontend")
