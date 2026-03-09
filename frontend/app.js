@@ -7,8 +7,11 @@ let allJobs = [];
 
 // ── API helper ────────────────────────────────────────────────────────────────
 function apiBase() {
-  return (document.getElementById("apiBase")?.value || "http://localhost:8000/api/v1")
-    .trim().replace(/\/$/, "");
+  const stored = document.getElementById("apiBase")?.value || "";
+  if (stored.trim()) return stored.trim().replace(/\/$/, "");
+  // Auto-detect: on production (served via nginx) use relative path
+  const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  return isLocal ? "http://localhost:8000/api/v1" : "/api/v1";
 }
 
 async function api(path, init = {}) {
